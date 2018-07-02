@@ -68,6 +68,18 @@ The `host` network is a special network that skips any virtual networks and atta
 
 It is possible to attach a container to 2 networks. The way to do that would be to connect a container to a specific network in the following way
 
-`docker network connect <network_id> <container_id>`: essentially attach a container to a network. 
+- `docker network connect <network_id> <container_id>`: essentially attach a container to a network. 
+
+#### Docker Networks: DNS
+
+Docker uses the container names as the host names for containers talking to each other. Lets say we run a container with a name and specify a network for that container. When the container is attached with a network, the DNS of that container will automatically be the name of that container. 
+
+```bash
+docker network create test_net
+docker container run -d --network test_net --name nginx1 nginx
+docker container run -d --network test_net --name nginx2 nginx
+docker container exec -it nginx1 ping nginx2
+```
+When we execute the last command we find that it is possible to ping container nginx2 simply by using the name of the container as the name becomes the host name of the container as well
 
 
