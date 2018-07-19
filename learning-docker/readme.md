@@ -82,4 +82,23 @@ docker container exec -it nginx1 ping nginx2
 ```
 When we execute the last command we find that it is possible to ping container nginx2 simply by using the name of the container as the name becomes the host name of the container as well
 
+Here we can see how important it is to specify names of our containers. 
+
+For the default bridge network there is no default DNS service built into it. So in order to link different containers we can use the `--link` option while creating a container.
+
+When we create multiple containers running the same piece of software, lets say an elasticsearch server, it is possible to have an alias to access those containers such that we have kind of a load balancer between the containers. This can be achieved in the following way:
+
+```bash
+docker network create dude
+docker container run -d --net dude --net-alias search elasticsearch:2 
+docker container run -d --net dude --net-alias search elasticsearch:2 # 2 containers started with the same alias
+docker container run --rm --net dude alpine nslookup search
+
+# nslookup obviously is nameserver lookup. So when we lookup the name search we actually get 2 different container ip addresses
+
+docker container run --rm --net dude centos curl -s search:9200
+
+# this gives us back the elasticsearch response on 9200
+```
+If we actually run that last command over and over again we will be able to access the 2 containers not necessarily in a round robin fashion. This behaves like a load balancer that balances the load rather randomly.
 
