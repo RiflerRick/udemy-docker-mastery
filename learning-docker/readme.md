@@ -102,3 +102,14 @@ docker container run --rm --net dude centos curl -s search:9200
 ```
 If we actually run that last command over and over again we will be able to access the 2 containers not necessarily in a round robin fashion. This behaves like a load balancer that balances the load rather randomly.
 
+### Docker Images
+ 
+Images are stored as fs layers. Each layer is stored only once for the entire system which means that if there are 2 images that have the same base layer say then the 2 base layers are not stored twice for the 2 images. It is stored only once and each image actually uses that same layer.
+
+When a container is launched of an image, docker actually adds another file system layer on top of the topmost image layer. If we modify an image layer that is shared by another image, docker actually copies that image layer on top of the existing layer and makes a new layer only for that image, so that the original image layer is unmodified for other images to share. 
+
+```bash
+docker image tag <source image with an optional tag> <destination image with an optional tag> # used for tagging images
+docker image push <image name with tag>
+```
+
