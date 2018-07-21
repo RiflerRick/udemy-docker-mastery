@@ -184,3 +184,27 @@ docker container run -v /var/log:/var/log nginx
 
 The left side is the host machine and the right side is the container. 
 
+### Docker Compose
+
+Main sections in docker-compose.yml file
+- services
+- volumes
+- networks
+
+Sample docker-compose.yml
+
+```yml
+version: '3.1'  # if no version is specificed then v1 is assumed. Recommend v2 minimum
+
+services:  # containers. same as docker run
+  servicename: # a friendly name. this is also DNS name inside network
+    image: # Optional if you use build:
+    command: # Optional, replace the default CMD specified by the image
+    environment: # Optional, same as -e in docker run
+    volumes: # Optional, same as -v in docker run
+  servicename2:
+
+volumes: # Optional, same as docker volume create
+
+networks: # Optional, same as docker network create
+```
