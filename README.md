@@ -208,3 +208,40 @@ volumes: # Optional, same as docker volume create
 
 networks: # Optional, same as docker network create
 ```
+
+Another sample docker-compose.yml file
+
+```yml
+version: '2' 
+
+services:
+
+  wordpress:
+    image: wordpress
+    ports:
+      - 8080:80
+    environment:
+      WORDPRESS_DB_HOST: mysql
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DB_USER: example
+      WORDPRESS_DB_PASSWORD: examplePW
+    volumes:
+      - ./wordpress-data:/var/www/html
+
+  mysql:
+    image: mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: examplerootPW
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: example
+      MYSQL_PASSWORD: examplePW
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+volumes:
+  mysql-data:
+
+```
+In the above case, one important thing to observe is that in the `environment` tag there are multiple environment variables mentioned however it is not in the form of a list.
+
+Note: In case of docker volumes we can do something like `/var/lib:/var/lib:ro`. That last `ro` actually tells docker that the volume is readonly from within the container. 
