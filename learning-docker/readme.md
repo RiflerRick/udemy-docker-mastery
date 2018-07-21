@@ -130,3 +130,57 @@ When we are building a dockerfile each layer that gets built actually gets cache
 
 We can potentially get away with the `CMD` command in a dockerfile if our base image already has some `CMD` in it. When we use a base image we inherit everything except the `ENV`s from the base image. 
 
+### Container Lifetime and Persistent Volumes
+
+Containers are in general **immutable and ephemeral**. These are important buzz words in the container industry. They are just fancy ways of saying that containers are designed to be immutable and disposable. That means that once a container is running, we should not be able to change stuff inside the container, if we need to do so we should throw away the existing container and build a new image for a new container. 
+
+However we should be able to have all our data separate from all our container related settings and configs. This is called **separation of concerns** and the data that we are trying to separate is called persistent data. 
+
+There are actually 2 ways in which docker handles persistent data:
+- volumes
+- bind mounts
+
+**Volumes** actually make special locations outside the container's union file system. 
+**Bind Mounts** link container paths to host paths.
+
+#### Unnamed volumes or simply volumes
+
+volumes are for storage of persistent data. One way by which we can configure a volume for persistent data is by stating it in the dockerfile, in the following way:
+
+```dockerfile
+VOLUME /var/lib/mysql
+```
+This creates an unnamed volume that points to `/var/lib/mysql` in the container. During runtime of the container, anything that is stored in this location will remain persistent. Even if the container is stopped or even removed, any data that was stored in that volume remains persistent. If we inspect the container that has the volume, we would be able to see the actual location where the volume data is stored. On a linux machine we would be able to actually navigate to this location however on a windows or a mac machine, that runs docker on a linux vm, the source location is actually present in that volume and not on the real machine. 
+ 
+Another way to state the volume would be to use the `-v` option along with the `container run` command, in the following way
+
+```bash
+docker container run -v /var/log/nginx nginx
+``` 
+This would have the same impact as the `VOLUME` directive in the dockerfile. Once a container is stopped, if we spin another container with the same image, a new location will be set up. However if we start the previously stopped container that same location will persist. 
+
+#### Named volumes
+
+Another way to have persistent data is to have a named volume. A named volume can be configured in a dockerfile in the following way:
+
+```dockerfile
+VOLUME logs-vol:/var/log/nginx/access.log
+```
+When a named volume is created, if there are 2 containers created having the same named volume, the persistent data is shared across the containers.
+
+At container run time it can be done in the following way:
+
+```bash
+docker container run -v logs-vol:/var/log/nginx/access.log nginx
+```
+
+#### Bind Mounts
+
+With bind mounts, a directory in the host file system is actually mapped into a directory in the container. This means that bind mounts cannot actually be written inside dockerfiles as binding is done during runtime. 
+
+```bash
+docker container run -v /var/log:/var/log nginx
+```
+
+The left side is the host machine and the right side is the container. 
+
