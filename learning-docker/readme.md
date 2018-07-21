@@ -123,3 +123,10 @@ RUN ln -sf /dev/stdout /var/log/nginx/access.log \
     && ln -sf /dev/stderr /var/log/nginx/error.log
 ```
 We are simply linking `/dev/stdout` to `/var/log/nginx/access.log` and `/dev/stderr` to `/var/log/nginx/error.log`
+
+When we are building a dockerfile each layer that gets built actually gets cached as well, so the next time we build the dockerfile, the layers that did not change are not rebuilt. If we change one line in the dockerfile, the step at which it got changed will be rebuilt along with all the steps succeeding it. It is therefore very important that we get the order of the steps right so that the lines are less prone to change are at the top and the ones that are more prone to change are at the bottom. 
+
+`WORKDIR` is the working directory in the dockerfile
+
+We can potentially get away with the `CMD` command in a dockerfile if our base image already has some `CMD` in it. When we use a base image we inherit everything except the `ENV`s from the base image. 
+
