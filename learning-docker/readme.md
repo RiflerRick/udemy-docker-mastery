@@ -113,3 +113,13 @@ docker image tag <source image with an optional tag> <destination image with an 
 docker image push <image name with tag>
 ```
 
+### The Dockerfile
+
+The Dockerfile has instructions for building docker images. Each directive in the dockerfile serves as a layer therefore the order in which the directives are written actually matters. So lets say if there are 2 `RUN` directives then it means that those will be 2 layers in the file system.
+
+Note: In case we want to log something from one of our apps that is running inside our container, the best way to log it is to redirect all logs to stdout and stderr. This can be done in the following way:
+```dockerfile
+RUN ln -sf /dev/stdout /var/log/nginx/access.log \
+    && ln -sf /dev/stderr /var/log/nginx/error.log
+```
+We are simply linking `/dev/stdout` to `/var/log/nginx/access.log` and `/dev/stderr` to `/var/log/nginx/error.log`
